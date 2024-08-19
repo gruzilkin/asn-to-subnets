@@ -36,14 +36,18 @@ async def root(asn: List[str] = Query(None)):
         if not as_number.startswith("AS") or not as_number[2:].isdigit():
             return PlainTextResponse(status_code=400, content=f"Invalid AS number: {as_number}")
 
-    subnets = []
+    result = []
     for as_number in asn:
+        subnets = []
         for subnet in get_subnets_from_command(as_number):
             subnets.append(subnet)
+        merged_subnets = merge_subnets(subnets)
 
-    merged_subnets = merge_subnets(subnets)
-    result = "\n".join([str(subnet) for subnet in merged_subnets])
-    return PlainTextResponse(content=result)
+        result.append(f"#{as_number}")
+        for subnet in merged_subnets:
+            result.append(str(subnet))
+        result.append("")
+    return PlainTextResponse(content="\n".join(result))
 
 if __name__ == "__main__":
     import uvicorn
