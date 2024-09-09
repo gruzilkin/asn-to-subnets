@@ -30,11 +30,11 @@ def merge_subnets(subnets):
 @app.get("/")
 async def root(asn: List[str] = Query(None)):
     if not asn:
-        return PlainTextResponse(status_code=400, content="No AS numbers provided with asn get parameter")
+        return PlainTextResponse(status_code=400, content="# No AS numbers provided with asn get parameter")
 
     for as_number in asn:
         if not as_number.startswith("AS") or not as_number[2:].isdigit():
-            return PlainTextResponse(status_code=400, content=f"Invalid AS number: {as_number}")
+            return PlainTextResponse(status_code=400, content=f"# Invalid AS number: {as_number}")
 
     result = []
     for as_number in asn:
@@ -43,6 +43,7 @@ async def root(asn: List[str] = Query(None)):
             subnets.append(subnet)
         merged_subnets = merge_subnets(subnets)
 
+        result.append("")
         result.append(f"#{as_number}")
         for subnet in merged_subnets:
             result.append(str(subnet))
